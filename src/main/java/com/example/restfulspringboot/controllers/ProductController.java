@@ -2,7 +2,6 @@ package com.example.restfulspringboot.controllers;
 
 import com.example.restfulspringboot.dtos.ProductRecordDto;
 import com.example.restfulspringboot.models.ProductModel;
-import com.example.restfulspringboot.repositories.ProductRepository;
 import com.example.restfulspringboot.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -20,9 +19,6 @@ import java.util.UUID;
 
 @RestController
 public class ProductController {
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     ProductService productService;
