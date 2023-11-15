@@ -5,7 +5,6 @@ import com.example.restfulspringboot.controllers.ProductController;
 import com.example.restfulspringboot.models.ProductModel;
 import com.example.restfulspringboot.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +33,16 @@ public class ProductService {
         return productsList;
     }
 
-    public ProductModel addProduct(ProductModel productModel) {
+    public ProductModel addOrUpdateProduct(ProductModel productModel) {
         return productRepository.save(productModel);
     }
     
     public Optional<ProductModel> productById(UUID id){
         return productRepository.findById(id);
+    }
+
+    public void deleteProduct(Optional<ProductModel> findProduct){
+        productRepository.delete(findProduct.get());
     }
 
 }

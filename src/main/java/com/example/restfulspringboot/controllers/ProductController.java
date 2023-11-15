@@ -31,7 +31,7 @@ public class ProductController {
      public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto){
           var productModel = new ProductModel();
           BeanUtils.copyProperties(productRecordDto, productModel);
-          return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productModel));
+          return ResponseEntity.status(HttpStatus.CREATED).body(productService.addOrUpdateProduct(productModel));
     }
 
     @GetMapping("/products")
@@ -51,27 +51,25 @@ public class ProductController {
     @PutMapping("/products/{id}")
      public ResponseEntity<Object> updateProduct(@PathVariable(value="id") UUID id,
                                                  @RequestBody @Valid ProductRecordDto productRecordDto) {
-        Optional<ProductModel> findProduct = productRepository.findById(id);
+        Optional<ProductModel> findProduct = productService.productById(id);
         if(findProduct.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
         }
 
         var productModel = findProduct.get();
         BeanUtils.copyProperties(productRecordDto, productModel);
-        return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.addOrUpdateProduct(productModel));
 
     }
 
     @DeleteMapping("/products/{id}")
      public ResponseEntity<Object> deleteProduct(@PathVariable(value="id") UUID id) {
-        Optional<ProductModel> findProduct  = productRepository.findById(id);
+        Optional<ProductModel> findProduct = productService.productById(id);
         if(findProduct.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
         }
-
-        productRepository.delete(findProduct.get());
+        productService.deleteProduct(findProduct);
         return ResponseEntity.status(HttpStatus.OK).body("Product deleted");
-
     }
 
 }
