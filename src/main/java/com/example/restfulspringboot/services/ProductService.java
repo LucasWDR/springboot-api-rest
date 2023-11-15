@@ -5,8 +5,10 @@ import com.example.restfulspringboot.controllers.ProductController;
 import com.example.restfulspringboot.models.ProductModel;
 import com.example.restfulspringboot.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -20,9 +22,8 @@ public class ProductService {
     public  ProductService(ProductRepository productRepository){
         this.productRepository = productRepository;
     }
-
-
-    public ProductModel getAllProducts(){
+    
+    public List<ProductModel> getAllProducts(){
         List<ProductModel> productsList  = productRepository.findAll();
         if(!productsList.isEmpty()){
             for(ProductModel product: productsList){
@@ -30,11 +31,15 @@ public class ProductService {
                 product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
             }
         }
-        return (ProductModel) productsList;
+        return productsList;
     }
 
     public ProductModel addProduct(ProductModel productModel) {
         return productRepository.save(productModel);
+    }
+    
+    public Optional<ProductModel> productById(UUID id){
+        return productRepository.findById(id);
     }
 
 }
