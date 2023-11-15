@@ -3,6 +3,7 @@ package com.example.restfulspringboot.controllers;
 import com.example.restfulspringboot.dtos.ProductRecordDto;
 import com.example.restfulspringboot.models.ProductModel;
 import com.example.restfulspringboot.repositories.ProductRepository;
+import com.example.restfulspringboot.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,23 +23,19 @@ public class ProductController {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    ProductService productService;
+
     @PostMapping("/products")
      public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto){
           var productModel = new ProductModel();
           BeanUtils.copyProperties(productRecordDto, productModel);
-          return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.save(productModel));
+          return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productModel));
     }
 
     @GetMapping("/products")
-     public ResponseEntity<List<ProductModel>> getAllProducts() {
-        List<ProductModel> productsList = productRepository.findAll();
-        if(!productsList.isEmpty()){
-            for(ProductModel product: productsList){
-                UUID id = product.getIdProduct();
-                product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(productsList);
+     public ResponseEntity<ProductModel> getAllProducts() {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts());
     }
 
     @GetMapping("/products/{id}")
